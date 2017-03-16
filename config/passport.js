@@ -1,5 +1,6 @@
 var passport = require('passport'),
 LocalStrategy = require('passport-local'),
+FacebookStrategy = require('passport-facebook'),
 db = require('../models');
 
 passport.serializeUser(function(user, done) {
@@ -19,7 +20,6 @@ passport.use(new LocalStrategy(function(username, password, done) {
   console.log('username', username);
   console.log('password', password);
   db.User.findOne({where: {username: username}}).then(function(user) {
-    console.log('user', user);
     if (!user) {
       return done(null, false, { message: 'Incorrect credentials.' })
     }
@@ -30,3 +30,28 @@ passport.use(new LocalStrategy(function(username, password, done) {
     });    
   });
 }));
+
+
+passport.use(new FacebookStrategy({
+    clientID: '421818958150614',
+    clientSecret: 'fc7509e4ae6c9347f8a067b5c8a7f883',
+    callbackURL: "http://localhost:3000/auth/facebook/callback",
+    profileFields: ['id', 'displayName', 'email']
+  },
+  function(accessToken, refreshToken, profile, done) {
+    console.log('profile', profile);
+    db.User.findOne({where: {facebookId: profile.id}}).then(function(user) {
+      if (!user) {
+        db.User.create({facebookRefreshToken: refreshToken, facebookAccessToken: accessToken, facebookId: profile.id, username: profile.username || profile.emails[0].value, password: 'some random password hash' }).then(function(user) {
+          done(null, user);
+        }).catch(function(err) {
+          console.log('err', err);
+          done(err, false);
+        });
+
+      } else {
+        done(err, found ? user : false);
+      }
+    });
+  }
+));

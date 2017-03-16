@@ -4,7 +4,12 @@ const saltRounds = 10;
 module.exports = function(sequelize, DataTypes) {
   var User = sequelize.define('User', {
     username: { type: DataTypes.STRING, unique: true, allowNull: false, validate: { notEmpty: true}},
-    password: { type: DataTypes.STRING, unique: true, allowNull: false, validate: { notEmpty: true}}
+    password: { type: DataTypes.STRING, unique: true, allowNull: false, validate: { notEmpty: true}},
+
+
+    facebookId: { type: DataTypes.STRING, unique: true},
+    facebookRefreshToken: { type: DataTypes.STRING, unique: true},
+    facebookAccessToken: { type: DataTypes.STRING, unique: true},
   },{
     classMethods: {
       validPassword: function(password, passwd, callback) {

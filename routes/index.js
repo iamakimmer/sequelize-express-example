@@ -10,7 +10,9 @@ routes.get('/', (req, res) => {
 routes.get('/dashboard', function(req, res, next) {
   console.log('going to dashboard'); next(null);
 }, middleware.authenticated, function(req, res) {
-  res.render('dashboard');
+  res.render('dashboard', {
+    user: req.user
+  });
 });
 
 
@@ -33,17 +35,42 @@ routes.get('/signup', function(req, res) {
 
 //create a new user
 routes.post('/signup', function(req, res) {
-  db.User.find({where: {username: req.userrname}}).then(function(user) {
+  db.User.find({where: {username: req.username}}).then(function(user) {
     if (!user) {
-      db.User.create({username: req.body.username, password: req.body.password}).then(function() {
-        req.logIn();
-        res.redirect('/dashboard');
+      db.User.create({username: req.body.username, password: req.body.password}).then(function(user) {
+        req.logIn(user, function(err) {
+          if (err) {
+            return res.redirect('/signup');
+          } else {
+            res.redirect('/dashboard');    
+          }
+        });
+        
       }).catch(function(err) {
         res.redirect('/signup');
       });
     }
   });
 });
+
+routes.get('/auth/facebook',
+  function(req, res, next) {
+    console.log('in auth facebook');
+    next();
+  },
+  passport.authenticate('facebook'));
+
+routes.get('/auth/facebook/callback',
+  function(req, res, next) {
+    console.log('in callback');
+    next();
+  },
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  function(req, res) {
+    console.log('in auth callback');
+    // Successful authentication, redirect home.
+    res.redirect('/dashboard');
+  });
 
 
 module.exports = routes;
