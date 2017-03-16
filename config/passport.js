@@ -1,6 +1,7 @@
 var passport = require('passport'),
 LocalStrategy = require('passport-local'),
 FacebookStrategy = require('passport-facebook'),
+TwitterStrategy = require('passport-twitter'),
 db = require('../models');
 
 passport.serializeUser(function(user, done) {
@@ -50,8 +51,33 @@ passport.use(new FacebookStrategy({
         });
 
       } else {
+        done(null, user ? user : false);
+      }
+    });
+  }
+));
+
+passport.use(new TwitterStrategy({
+    consumerKey: '3cVSSbZpeYUpQNPUYB218VteQ',
+    consumerSecret: 'qGRv7NXLTxQSFSeeq6OWtyvm6fO3Oy3xRPZiYL9F1L0VAAnDF4',
+    callbackURL: "http://127.0.0.1:3000/auth/twitter/callback"
+  },
+  function(token, tokenSecret, profile, done) {
+
+    db.User.findOne({where: {twitterId: profile.id}}).then(function(user) {
+      if (!user) {
+        console.log('profile', profile);
+        db.User.create({twitterId: profile.id, twitterToken: token, twitterSecret: tokenSecret, username: profile.username, password: 'some random password hash' }).then(function(user) {
+          done(null, user);
+        }).catch(function(err) {
+          console.log('err', err);
+          done(err, false);
+        });
+
+      } else {
         done(err, found ? user : false);
       }
     });
+
   }
 ));

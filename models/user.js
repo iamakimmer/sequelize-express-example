@@ -6,10 +6,16 @@ module.exports = function(sequelize, DataTypes) {
     username: { type: DataTypes.STRING, unique: true, allowNull: false, validate: { notEmpty: true}},
     password: { type: DataTypes.STRING, unique: true, allowNull: false, validate: { notEmpty: true}},
 
+    email: { type: DataTypes.STRING, unique: true},
 
     facebookId: { type: DataTypes.STRING, unique: true},
     facebookRefreshToken: { type: DataTypes.STRING, unique: true},
     facebookAccessToken: { type: DataTypes.STRING, unique: true},
+
+    twitterId: { type: DataTypes.STRING, unique: true},
+    twitterToken: { type: DataTypes.STRING, unique: true},
+    twitterSecret: { type: DataTypes.STRING, unique: true}
+
   },{
     classMethods: {
       validPassword: function(password, passwd, callback) {

@@ -72,5 +72,24 @@ routes.get('/auth/facebook/callback',
     res.redirect('/dashboard');
   });
 
+routes.get('/auth/twitter',
+  function(req, res, next) {
+    console.log('in auth twitter');
+    next();
+  },
+  passport.authenticate('twitter'));
+
+routes.get('/auth/twitter/callback',
+  function(req, res, next) {
+    console.log('in callback');
+    next();
+  },
+  passport.authenticate('twitter', { failureRedirect: '/login' }),
+  function(req, res) {
+    console.log('in auth callback');
+    // Successful authentication, redirect home.
+    res.redirect('/dashboard');
+  });
+
 
 module.exports = routes;
