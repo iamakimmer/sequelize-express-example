@@ -29,6 +29,8 @@ app.use(bodyParser.json({ type: "application/vnd.api+json" }));
 
 app.use(cookieParser())
 app.set('trust proxy', 1) // trust first proxy
+
+//need sessions to persist state of user
 app.use(session({
   secret: '3or8h1o2h1o28u12o38j12',
   resave: false,
@@ -46,11 +48,7 @@ if (process.env.NODE_ENV === 'development') {
 
 
 db.sequelize.sync({ force: true }).then(function() {
-  // db.User.find({where: {username: 'matt'}}).then(function(user) {
-  //   if (!user) {
-  //     db.User.create({username: 'admin', password: 'admin'});
-  //   }
-  // })
+
   app.listen(PORT, function() {
     console.log("App listening on PORT " + PORT);
   });

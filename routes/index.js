@@ -3,7 +3,6 @@ const middleware = require('../config/middleware');
 const passport = require('passport');
 const db = require('../models');
 
-console.log('middleware', middleware);
 routes.get('/', (req, res) => {
   res.render('home');
 });
@@ -14,6 +13,8 @@ routes.get('/dashboard', function(req, res, next) {
   res.render('dashboard');
 });
 
+
+//login a new user
 routes.post('/authenticate', passport.authenticate('local', {
   successRedirect: '/dashboard',
   failureRedirect: '/login'
@@ -30,6 +31,7 @@ routes.get('/signup', function(req, res) {
   res.render('signup');
 });
 
+//create a new user
 routes.post('/signup', function(req, res) {
   db.User.find({where: {username: req.userrname}}).then(function(user) {
     if (!user) {
